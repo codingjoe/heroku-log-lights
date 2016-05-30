@@ -65,7 +65,7 @@ async def write_to_queue(log: bytes):
 async def print_log():
     while True:
         log = await queue.get()
-        if log.service < 10:
+        if log.service < 30:
             color = COLORS.GREEN
         elif log.service < 100:
             color = COLORS.BLUE
@@ -73,5 +73,5 @@ async def print_log():
             color = COLORS.YELLOW
         else:
             color = COLORS.RED
-        seconds = math.ceil(log.service / 1000)
+        seconds = math.ceil(math.log(log.service, 1.4101)) % 30
         print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
