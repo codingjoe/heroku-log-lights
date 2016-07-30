@@ -1,17 +1,9 @@
 #!/usr/bin/env python
-from distutils.spawn import find_executable
-
 from setuptools import find_packages, setup
 
 PACKAGE_NAME = "heroku_loglights"
 PACKAGE = __import__(PACKAGE_NAME)
-GH_URL = "https://github.com/codingjoe/django-cc"
-
-if not find_executable('hub'):
-    raise RuntimeError(
-        '"hub" was not found.\n'
-        'Please download hup at https://hub.github.com/'
-    )
+GH_URL = "https://github.com/codingjoe/heroku-log-lights"
 
 setup(
     name='heroku_loglights',
