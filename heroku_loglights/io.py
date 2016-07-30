@@ -96,7 +96,9 @@ def consume_logs():
         log = yield from queue.get()
         try:
             i = slots.index(0)
+            print(i)
             slots[i] = math.ceil(math.log(log.service, 1.4101)) % 30
+            print(slots[i])
         except ValueError:
             pass
 
