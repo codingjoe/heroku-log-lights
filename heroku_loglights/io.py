@@ -106,16 +106,16 @@ def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
         matrix.Clear()
-        for x in range(1, matrix.width + 2):
+        for x in range(matrix.width):
             try:
                 height = math.ceil(math.log(slots[x], HEROKU_ROUTER_TIMEOUT) * matrix.height)
             except ValueError:
                 pass
             else:
                 for y in range(height):
-                    centered_x = matrix.width/2
-                    centered_x += int(x/2) if x % 2 else x/-2
-                    matrix.SetPixel(centered_x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
+                    col = x + 1
+                    col = matrix.width/2 + (int(col/2) if col % 2 else col/-2)
+                    matrix.SetPixel(col, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
                 if slots[x] > 10:
                     slots[x] -= 10
                 else:
