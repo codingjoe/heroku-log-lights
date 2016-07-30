@@ -94,6 +94,7 @@ def consume_logs(slots):
         try:
             i = slots.index(0)
             slots[i] = int(log.service / 100)
+            print(log)
         except ValueError:
             pass
 
@@ -107,13 +108,14 @@ def print_matrix(matrix, slots):
             try:
                 height = math.ceil(math.log(slots[x], 300) * matrix.height)
             except ValueError:
-                continue
-            for y in range(height):
-                matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-            if slots[x] > 1.0:
-                slots[x] -= 1.0
-            elif 1.0 > slots[x] > 0:
-                slots[x] = 0
+                pass
+            else:
+                for y in range(height):
+                    matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
+                if slots[x] > 1.0:
+                    slots[x] -= 1.0
+                elif 1.0 > slots[x] > 0:
+                    slots[x] = 0
 
         (yield from asyncio.sleep(0.1))
 
