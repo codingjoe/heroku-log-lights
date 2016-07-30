@@ -94,7 +94,7 @@ def consume_logs(slots):
         try:
             i = slots.index(0)
             print(log.service)
-            slots[i] = log.service
+            slots[i] = log.service / 1000
         except ValueError:
             pass
 
@@ -114,6 +114,6 @@ def print_matrix(matrix, slots):
             elif 1.0 > seconds > 0:
                 slots[x] = 0
 
-        (yield from asyncio.sleep(0.001))
+        (yield from asyncio.sleep(1))
 
 
