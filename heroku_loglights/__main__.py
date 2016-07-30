@@ -7,7 +7,12 @@ import os
 import signal
 import sys
 
-from heroku_loglights.io import read_stream, print_log
+try:
+    from rgbmatrix import RGBMatrix
+except ImportError:
+    RGBMatrix = None
+
+from heroku_loglights.io import read_stream, print_log, print_matrix
 
 logger = logging.getLogger('heroku_loglights')
 
@@ -49,7 +54,11 @@ def main():
 
     loop = asyncio.get_event_loop()
     asyncio.Task(read_stream(app_name, auth_token))
-    asyncio.Task(print_log())
+    if RGBMatrix is None:
+        asyncio.Task(print_log())
+    else:
+        matrix = RGBMatrix(32, 2, 1)
+        asyncio.Task(print_matrix(matrix))
 
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame),

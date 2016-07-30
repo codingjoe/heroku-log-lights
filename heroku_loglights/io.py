@@ -53,7 +53,10 @@ def read_stream(app_name, auth_token):
         with aiohttp.ClientSession() as session:
             response = yield from session.get(stream_url)
             while True:
-                chunk = yield from response.content.read(1)
+                try:
+                    chunk = yield from response.content.read(1)
+                except aiohttp.ServerDisconnectedError:
+                    break
                 if not chunk:
                     break
                 if chunk == b'\n':
@@ -82,3 +85,22 @@ def print_log():
             color = COLORS.RED
         seconds = math.ceil(math.log(log.service, 1.4101)) % 30
         print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
+
+
+@asyncio.coroutine
+def print_matrix(matrix):
+    col = 0
+    while True:
+        log = yield from queue.get()
+        if log.service < 30:
+            color = 0, 255, 0
+        elif log.service < 100:
+            color = 0, 0, 255
+        elif log.service < 1000:
+            color = 0, 255, 255
+        else:
+            color = 255, 0, 0
+        for row in range(matrix.height):
+            matrix.SetPixel(row, col, *color)
+        col += 1
+        col %= matrix.width
