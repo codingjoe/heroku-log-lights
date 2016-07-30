@@ -93,8 +93,7 @@ def consume_logs(slots):
         log = yield from queue.get()
         try:
             i = slots.index(0)
-            print(log.service)
-            slots[i] = log.service / 1000
+            slots[i] = int(log.service / 100)
         except ValueError:
             pass
 
@@ -105,15 +104,14 @@ def print_matrix(matrix, slots):
     while True:
         matrix.Clear()
         for x in range(matrix.width):
-            seconds = slots[x]
-            height = 1 - 1 / math.pow(seconds + 1, 2)
-            for y in range(int(matrix.height * height)):
+            height = math.ceil(math.log(slots[x], 300) * matrix.height)
+            for y in range(height):
                 matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-            if seconds > 1.0:
+            if slots[x] > 1.0:
                 slots[x] -= 1.0
-            elif 1.0 > seconds > 0:
+            elif 1.0 > slots[x] > 0:
                 slots[x] = 0
 
-        (yield from asyncio.sleep(1))
+        (yield from asyncio.sleep(0.1))
 
 
