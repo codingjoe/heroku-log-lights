@@ -33,6 +33,8 @@ For more information, please refer to <http://unlicense.org>"""
 _example = '2016-05-27T13:35:16.153374+00:00 heroku[router]: at=info method=POST path="/api/import/closeio/" host=backend.thermondo.de request_id=2388ebb8-fe62-4834-aa01-d1aca2f210ff fwd="54.203.52.130" dyno=web.13 connect=0ms service=158ms status=200 bytes=488'
 
 
+HEROKU_ROUTER_TIMEOUT = 30000
+
 class Log:
     PATTERN = (
         r'(?P<year>\d{4})'

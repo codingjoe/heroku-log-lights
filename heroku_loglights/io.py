@@ -4,7 +4,7 @@ import json
 import aiohttp
 import math
 
-from heroku_loglights import Log
+from heroku_loglights import Log, HEROKU_ROUTER_TIMEOUT
 
 queue = asyncio.Queue(30)
 
@@ -93,7 +93,7 @@ def consume_logs(slots):
         log = yield from queue.get()
         try:
             i = slots.index(0)
-            slots[i] = log.service / 100
+            slots[i] = log.service
         except ValueError:
             pass
 
@@ -105,15 +105,15 @@ def print_matrix(matrix, slots):
         matrix.Clear()
         for x in range(matrix.width):
             try:
-                height = math.ceil(math.log(slots[x], 300) * matrix.height)
+                height = math.ceil(math.log(slots[x], HEROKU_ROUTER_TIMEOUT) * matrix.height)
             except ValueError:
                 pass
             else:
                 for y in range(height):
                     matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-                if slots[x] > 1.0:
-                    slots[x] -= 1.0
-                elif 1.0 > slots[x] > 0:
+                if slots[x] > 100:
+                    slots[x] -= 100
+                elif 100 > slots[x] > 0:
                     slots[x] = 0
 
         (yield from asyncio.sleep(0.1))
