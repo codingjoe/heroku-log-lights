@@ -89,7 +89,7 @@ def print_log():
 
 @asyncio.coroutine
 def print_matrix(matrix):
-    col = 0
+    x = 0
     while True:
         log = yield from queue.get()
         if log.service < 30:
@@ -100,7 +100,8 @@ def print_matrix(matrix):
             color = 0, 255, 255
         else:
             color = 255, 0, 0
-        for row in range(matrix.height):
-            matrix.SetPixel(row, col, *color)
-        col += 1
-        col %= matrix.width
+        seconds = math.ceil(math.log(log.service, 1.4101)) % 30
+        for y in range(int(matrix.height * seconds/30)):
+            matrix.SetPixel(x, matrix.height-y, *color)
+        x += 1
+        x %= matrix.width
