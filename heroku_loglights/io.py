@@ -105,12 +105,13 @@ def print_matrix(matrix, slots):
     while True:
         matrix.Clear()
         for x in range(matrix.width):
-            height = 1 - 1 / math.pow(slots[x] + 1, 2)
+            seconds = slots[x]
+            height = 1 - 1 / math.pow(seconds + 1, 2)
             for y in range(int(matrix.height * height)):
                 matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-            if slots[x] > 1:
-                slots[x] -= 1
-            elif 1 > slots[x] > 0:
+            if seconds > 1.0:
+                slots[x] -= 1.0
+            elif 1.0 > seconds > 0:
                 slots[x] = 0
 
         (yield from asyncio.sleep(0.001))
