@@ -105,6 +105,7 @@ def consume_logs():
 def print_matrix(matrix):
     slots = [0] * matrix.width
     while True:
+        print(slots)
         matrix.Clear()
         for x in range(matrix.width):
             for y in range(int(matrix.height * slots[x] / 30)):
