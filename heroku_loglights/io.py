@@ -93,8 +93,7 @@ def consume_logs(slots):
         log = yield from queue.get()
         try:
             i = slots.index(0)
-            slots[i] = int(log.service / 100)
-            print(log)
+            slots[i] = log.service / 100
         except ValueError:
             pass
 
