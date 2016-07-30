@@ -104,7 +104,10 @@ def print_matrix(matrix, slots):
     while True:
         matrix.Clear()
         for x in range(matrix.width):
-            height = math.ceil(math.log(slots[x], 300) * matrix.height)
+            try:
+                height = math.ceil(math.log(slots[x], 300) * matrix.height)
+            except ValueError:
+                continue
             for y in range(height):
                 matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
             if slots[x] > 1.0:
