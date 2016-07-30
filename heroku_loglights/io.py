@@ -94,19 +94,20 @@ def consume_logs(slots):
         try:
             i = slots.index(0)
             print(log.service)
-            slots[i] = log.service
+            slots[i] = log.service / 1000
         except ValueError:
             pass
 
 
 @asyncio.coroutine
 def print_matrix(matrix, slots):
+    cs = 255 / matrix.height
     while True:
         matrix.Clear()
         for x in range(matrix.width):
             height = math.sqrt(slots[x] / 30)
             for y in range(int(matrix.height * height)):
-                matrix.SetPixel(x, matrix.height - y, 0, 255, 0)
+                matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
             if slots[x] > 0:
                 slots[x] -= 1
 
