@@ -115,7 +115,7 @@ def print_matrix(matrix, slots):
                     matrix.SetPixel(centered_x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
                 if slots[x] > 100:
                     slots[x] -= 100
-                elif 100 > slots[x] > 0:
+                else:
                     slots[x] = 0
 
         (yield from asyncio.sleep(0.1))
