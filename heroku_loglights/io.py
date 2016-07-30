@@ -87,21 +87,29 @@ def print_log():
         print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
 
 
+slots = []
+
 @asyncio.coroutine
-def print_matrix(matrix):
-    x = 0
+def consume_logs():
+
     while True:
         log = yield from queue.get()
-        if log.service < 30:
-            color = 0, 255, 0
-        elif log.service < 100:
-            color = 0, 0, 255
-        elif log.service < 1000:
-            color = 0, 255, 255
-        else:
-            color = 255, 0, 0
-        seconds = math.ceil(math.log(log.service, 1.4101)) % 30
-        for y in range(int(matrix.height * seconds/30)):
-            matrix.SetPixel(x, matrix.height-y, *color)
-        x += 1
-        x %= matrix.width
+        try:
+            i = slots.index(0)
+            slots[i] = math.ceil(math.log(log.service, 1.4101)) % 30
+        except ValueError:
+            pass
+
+
+@asyncio.coroutine
+def print_matrix(matrix):
+    slots = [0] * matrix.width
+    while True:
+        matrix.Clear()
+        for x in range(matrix.width):
+            for y in range(int(matrix.height * slots[x] / 30)):
+                matrix.SetPixel(x, matrix.height - y, 0, 255, 0)
+
+        (yield from asyncio.sleep(1))
+
+
