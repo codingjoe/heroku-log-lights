@@ -58,8 +58,9 @@ def main():
         asyncio.Task(print_log())
     else:
         matrix = RGBMatrix(32, 2, 1)
-        asyncio.Task(print_matrix(matrix))
-        asyncio.Task(consume_logs())
+        slots = [0] * matrix.width
+        asyncio.Task(print_matrix(matrix, slots))
+        asyncio.Task(consume_logs(slots))
 
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame),
