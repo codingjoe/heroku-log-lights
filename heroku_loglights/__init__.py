@@ -35,6 +35,7 @@ _example = '2016-05-27T13:35:16.153374+00:00 heroku[router]: at=info method=POST
 
 HEROKU_ROUTER_TIMEOUT = 30000
 
+
 class Log:
     PATTERN = (
         r'(?P<year>\d{4})'
@@ -59,11 +60,15 @@ class Log:
     )
 
     def __init__(self, log_str: str):
-        args = re.match(self.PATTERN, log_str).groupdict()
+        result = re.match(self.PATTERN, log_str)
+        if result is None:
+            raise ValueError("Given sting isn't a valid log: %s" % log_str)
+        args = result.groupdict()
         self.status = int(args.pop('status'))
         self.service = int(args.pop('service'))
         for key, value in args.items():
             setattr(self, key, value)
+
 
     def __str__(self):
         return "{service:>5}ms /w {status} @ {path}".format(

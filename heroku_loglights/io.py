@@ -60,7 +60,10 @@ def read_stream(app_name, auth_token):
                 if not chunk:
                     break
                 if chunk == b'\n':
-                    yield from write_to_queue(log)
+                    try:
+                        yield from write_to_queue(log)
+                    except ValueError as e:
+                        print(str(e))
                     log = b''
                 else:
                     log += chunk
@@ -91,11 +94,8 @@ def print_log():
 def consume_logs(slots):
     while True:
         log = yield from queue.get()
-        try:
-            i = slots.index(0)
-            slots[i] = log.service
-        except ValueError:
-            pass
+        i = slots.index(0)
+        slots[i] = log.service
 
 
 @asyncio.coroutine
