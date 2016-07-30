@@ -113,11 +113,11 @@ def print_matrix(matrix, slots):
                     centered_x = matrix.width/2
                     centered_x += int(x/2) if x % 2 else x/-2
                     matrix.SetPixel(centered_x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-                if slots[x] > 100:
-                    slots[x] -= 100
+                if slots[x] > 10:
+                    slots[x] -= 10
                 else:
                     slots[x] = 0
 
-        (yield from asyncio.sleep(0.1))
+        (yield from asyncio.sleep(0.01))
 
 
