@@ -110,6 +110,8 @@ def print_matrix(matrix, slots):
                 pass
             else:
                 for y in range(height):
+                    centered_x = matrix.width/2
+                    centered_x += int(x/2) if x % 2 else x/-2
                     matrix.SetPixel(x, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
                 if slots[x] > 100:
                     slots[x] -= 100
