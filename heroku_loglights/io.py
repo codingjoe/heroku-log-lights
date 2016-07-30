@@ -26,7 +26,9 @@ class COLORS:
     UNDERLINE = '\033[4m'
     BLINK = '\033[4m'
 
-async def get_stream_url(app_name, token):
+
+@asyncio.coroutine
+def get_stream_url(app_name, token):
     url = 'https://api.heroku.com/apps/%s/log-sessions' % app_name
     with aiohttp.ClientSession() as session:
         headers = {
@@ -34,37 +36,42 @@ async def get_stream_url(app_name, token):
             'Accept': 'application/vnd.heroku+json; version=3',
             'Authorization': 'Bearer %s' % token
         }
-        async with session.post(url, data=json.dumps(log_config), headers=headers) as response:
-            if response.status == 201:
-                data = await response.json()
-                return data['logplex_url']
-            else:
-                raise IOError
+        response = yield from session.post(url, data=json.dumps(log_config), headers=headers)
+        if response.status == 201:
+            data = yield from response.json()
+            return data['logplex_url']
+        else:
+            raise IOError
 
 
-async def read_stream(stream_url: str):
-    log = b''
-    print('Reading stream: %s' % stream_url)
-    with aiohttp.ClientSession() as session:
-        async with session.get(stream_url) as response:
+@asyncio.coroutine
+def read_stream(app_name, auth_token):
+    while True:
+        stream_url = yield from get_stream_url(app_name, auth_token)
+        print('Reading stream: %s' % stream_url)
+        log = b''
+        with aiohttp.ClientSession() as session:
+            response = yield from session.get(stream_url)
             while True:
-                chunk = await response.content.read(1)
+                chunk = yield from response.content.read(1)
                 if not chunk:
                     break
                 if chunk == b'\n':
-                    await write_to_queue(log)
+                    yield from write_to_queue(log)
                     log = b''
                 else:
                     log += chunk
 
 
-async def write_to_queue(log: bytes):
-    await queue.put(Log(log.decode('utf-8')))
+@asyncio.coroutine
+def write_to_queue(log: bytes):
+    yield from queue.put(Log(log.decode('utf-8')))
 
 
-async def print_log():
+@asyncio.coroutine
+def print_log():
     while True:
-        log = await queue.get()
+        log = yield from queue.get()
         if log.service < 30:
             color = COLORS.GREEN
         elif log.service < 100:

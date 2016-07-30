@@ -7,7 +7,7 @@ import os
 import signal
 import sys
 
-from heroku_loglights.io import read_stream, print_log, get_stream_url
+from heroku_loglights.io import read_stream, print_log
 
 logger = logging.getLogger('heroku_loglights')
 
@@ -48,8 +48,7 @@ def main():
         print("Done!")
 
     loop = asyncio.get_event_loop()
-    stream_url = loop.run_until_complete(get_stream_url(app_name, auth_token))
-    asyncio.Task(read_stream(stream_url))
+    asyncio.Task(read_stream(app_name, auth_token))
     asyncio.Task(print_log())
 
     for signame in ('SIGINT', 'SIGTERM'):
