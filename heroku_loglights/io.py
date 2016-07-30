@@ -93,7 +93,8 @@ def consume_logs(slots):
         log = yield from queue.get()
         try:
             i = slots.index(0)
-            slots[i] = int(log.service / 100) % 30
+            print(log.service)
+            slots[i] = log.service
         except ValueError:
             pass
 
@@ -103,7 +104,7 @@ def print_matrix(matrix, slots):
     while True:
         matrix.Clear()
         for x in range(matrix.width):
-            height = 1 - math.sqrt(slots[x] / 30)
+            height = math.sqrt(slots[x] / 30)
             for y in range(int(matrix.height * height)):
                 matrix.SetPixel(x, matrix.height - y, 0, 255, 0)
             if slots[x] > 0:
