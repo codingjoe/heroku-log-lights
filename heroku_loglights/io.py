@@ -89,16 +89,15 @@ def print_log():
 
 slots = []
 
+
 @asyncio.coroutine
 def consume_logs():
-
     while True:
         log = yield from queue.get()
         try:
+            print(log)
             i = slots.index(0)
-            print(i)
             slots[i] = math.ceil(math.log(log.service, 1.4101)) % 30
-            print(slots[i])
         except ValueError:
             pass
 
