@@ -95,8 +95,8 @@ def consume_logs(slots):
     while True:
         log = yield from queue.get()
         try:
-            i = slots.index(0)
-            slots[i] = log.service
+            i = slots.index([0, 0])
+            slots[i] = [log.service, 0]
         except ValueError:
             print("No more slots. Log dropped: %s" % log)
 
@@ -108,7 +108,7 @@ def print_matrix(matrix, slots):
         matrix.Clear()
         for x in range(matrix.width):
             try:
-                height = math.ceil(math.log(slots[x], HEROKU_ROUTER_TIMEOUT) * matrix.height)
+                height = math.ceil(math.log(slots[x][1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
             except ValueError:
                 pass
             else:
@@ -116,9 +116,9 @@ def print_matrix(matrix, slots):
                     col = x + 1
                     col = matrix.width/2 + (int(col/2) if col % 2 else col/-2)
                     matrix.SetPixel(col, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-                if slots[x] > 10:
-                    slots[x] -= 10
-                else:
-                    slots[x] = 0
+            if slots[x][0] > slots[x][1]:
+                slots[x][1] += 10
+            else:
+                slots[x] = [0, 0]
 
         (yield from asyncio.sleep(0.01))

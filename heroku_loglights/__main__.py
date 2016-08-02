@@ -58,7 +58,7 @@ def main():
         asyncio.Task(print_log())
     else:
         matrix = RGBMatrix(32, 2, 1)
-        slots = [0] * matrix.width
+        slots = [[0, 0]] * matrix.width
         asyncio.Task(print_matrix(matrix, slots))
         asyncio.Task(consume_logs(slots))
 
