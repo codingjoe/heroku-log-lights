@@ -59,8 +59,32 @@ class Log:
         r' bytes=(?P<bytes>[^ ]+)'
     )
 
+    ERROR_PATTERN = (
+        r'(?P<year>\d{4})'
+        r'-(?P<month>[01]\d)'
+        r'-(?P<day>[0-3]\d)'
+        r'T(?P<hour>[0-2]\d)'
+        r':(?P<minute>[0-5]\d)'
+        r':(?P<second>[0-5]\d)'
+        r'\.\d+(?P<tz>[+-][0-2]\d:[0-5]\d|Z)'
+        r' heroku\[router\]:'
+        r' at=(?P<at>[^ ]+)'
+        r' code=(?P<code>[^ ]+)'
+        r' desc="(?P<desc>[^"]+)"'
+        r' method=(?P<method>[^ ]+)'
+        r' path="(?P<path>[^"]+)"'
+        r' host=(?P<host>[^ ]+)'
+        r' request_id=(?P<request_id>[^ ]+)'
+        r' fwd=(?P<fwd>[^ ]+)'
+        r' dyno=(?P<dyno>[^ ]+)'
+        r' connect=(?P<connect>[^ ]+)'
+        r' service=(?P<service>\d+)ms'
+        r' status=(?P<status>\d+)'
+        r' bytes=(?P<bytes>[^ ]+)'
+    )
+
     def __init__(self, log_str: str):
-        result = re.match(self.PATTERN, log_str)
+        result = re.match(self.PATTERN, log_str) or re.match(self.ERROR_PATTERN, log_str)
         if result is None:
             raise ValueError("Given sting isn't a valid log: %s" % log_str)
         args = result.groupdict()
@@ -68,7 +92,6 @@ class Log:
         self.service = int(args.pop('service'))
         for key, value in args.items():
             setattr(self, key, value)
-
 
     def __str__(self):
         return "{service:>5}ms /w {status} @ {path}".format(
