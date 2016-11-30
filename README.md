@@ -2,12 +2,19 @@
 
 _Heroku Log Lights is a visualisation of [Heroku][heroku] router logs for an LED matrix._
 
-### Getting Started
+## Getting Started
 
-Simply install the PyPi package using `pip`.
-
+### Install dependencies
 ```shell
-pip install heroku-log-lights
+sudo apt-get install git python3-dev python3-pillow python3-pip -y
+```
+
+### Build an install package
+```shell
+cd /tmp
+git clone https://github.com/codingjoe/heroku-log-lights.git
+make
+sudo make install
 ```
 
 You ether need to install the [heroku toolbelt][heroku-toolbelt]
