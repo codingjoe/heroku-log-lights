@@ -2,6 +2,8 @@
 
 _Heroku Log Lights is a visualisation of [Heroku][heroku] router logs for an LED matrix._
 
+![HLL Demo](demo.jpg)
+
 ## Getting Started
 
 ### Install dependencies
