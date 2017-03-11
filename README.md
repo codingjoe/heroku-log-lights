@@ -55,7 +55,7 @@ Once you have the [demo](https://github.com/hzeller/rpi-rgb-led-matrix#lets-do-i
 
 ![Star Trek helm](http://vignette4.wikia.nocookie.net/memoryalpha/images/9/94/Galaxy_mission_ops.jpg/revision/latest/scale-to-width-down/800?cb=20120226203320&path-prefix=en)
 
-You are almost done. All we need not is Python 3 and we are ready to roll!
+You are almost done. All we need now is Python 3 because we are using asyncio (duh).
 
 #### Install dependencies
 ```shell
