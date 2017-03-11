@@ -1,13 +1,13 @@
 # Heroku Log Lights
 
-_Heroku Log Lights is a visualisation of [Heroku][heroku] router logs for an LED matrix._
+_Heroku Log Lights is a visualisation of [Heroku][heroku] router logs for a LED matrix._
 
 ![HLL Demo](demo.gif)
 
 This little tool allows you to monitor all your applications router logs in real time.
-All requests are displayed logarithmic scale. 2xx responses are green, 3xx are blue, 4xx yellow & 5xx are red. The longer a requests takes to more the more the color shifts to red. If does a request hit the top, it ran for 30s and Heroku throws a H12 (request timeout).
+All requests are displayed in a logarithmic scale. 2xx responses are green, 3xx are blue, 4xx yellow & 5xx are red. The longer a request takes the more the color shifts to red. If a request hits the top, it ran for 30s and Heroku throws a H12 (request timeout).
 
-It sounds simple but it provides you an incredible feedback of your applications health.
+It sounds simple but it provides you with incredible feedback about your applications health.
 
 ## Manual
 
@@ -26,7 +26,7 @@ Upsy daisy, the latest version of your Android or Angular App is sending wrong r
 (4xx response)
 
 **Everything is red:**
-Run and hide! You have about 10min until your boss comes storming into the office and heads are rolling.
+Run and hide! You have about 10min until your boss comes storming the office and heads are rolling.
 (5xx response)
 
 ## Makers Guide
