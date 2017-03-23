@@ -105,28 +105,35 @@ def consume_logs(slots):
 def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
-        matrix.Clear()
-        for x in range(matrix.width):
-            if slots[x][0] is not None:
+        for slot in range(matrix.width):
+            col = slot + 1
+            col = matrix.width / 2 + (int(col / 2) if col % 2 else col / -2)
+            if slots[slot][0] is not None:
                 try:
-                    height = math.ceil(math.log(slots[x][1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
+                    height = math.ceil(math.log(slots[slot][1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
                 except ValueError:
                     pass
                 else:
                     for y in range(height):
-                        col = x + 1
-                        col = matrix.width/2 + (int(col/2) if col % 2 else col/-2)
-                        if 300 > slots[x][0].status >= 200:
-                            matrix.SetPixel(col, matrix.height - y, int(0 + cs * y), int(255 - cs * y), 0)
-                        elif 400 > slots[x][0].status >= 300:
-                            matrix.SetPixel(col, matrix.height - y, int(0 + cs * y), 0, int(255 - cs * y))
-                        elif 500 > slots[x][0].status >= 400:
-                            matrix.SetPixel(col, matrix.height - y, 255, 255, 0)
-                        elif slots[x][0].status >= 500:
-                            matrix.SetPixel(col, matrix.height - y, 255, 0, 0)
-                if slots[x][0].service > slots[x][1]:
-                    slots[x][1] += 10
+                        if 300 > slots[slot][0].status >= 200:
+                            color = int(0 + cs * y), int(255 - cs * y), 0
+                        elif 400 > slots[slot][0].status >= 300:
+                            color = int(0 + cs * y), 0, int(255 - cs * y)
+                        elif 500 > slots[slot][0].status >= 400:
+                            color = 255, 255, 0
+                        elif slots[slot][0].status >= 500:
+                            color = 255, 0, 0
+                        else:
+                            color = 0, 0, 0
+                        try:
+                            matrix.SetPixel(col, matrix.height - y, *color)
+                        except Exception:
+                            pass
+                if slots[slot][0].service >= slots[slot][1]:
+                    slots[slot][1] += 10
                 else:
-                    slots[x] = [None, 0]
+                    for row in range(1, matrix.height + 1):
+                        matrix.SetPixel(col, row, 0, 0, 0)
+                    slots[slot] = [None, 0]
 
         (yield from asyncio.sleep(0.01))
