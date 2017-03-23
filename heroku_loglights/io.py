@@ -129,11 +129,12 @@ def print_matrix(matrix, slots):
                             matrix.SetPixel(col, matrix.height - y, *color)
                         except Exception:
                             pass
-                if slots[slot][0].service >= slots[slot][1]:
-                    slots[slot][1] += 10
-                else:
-                    for row in range(1, matrix.height + 1):
-                        matrix.SetPixel(col, row, 0, 0, 0)
-                    slots[slot] = [None, 0]
+                    if slots[slot][0].service >= slots[slot][1]:
+                        slots[slot][1] += 10
+                    else:
+                        for row in range(1, matrix.height + 1):
+                            if row != height:
+                                matrix.SetPixel(col, row, 0, 0, 0)
+                        slots[slot] = [None, 0]
 
         (yield from asyncio.sleep(0.01))
