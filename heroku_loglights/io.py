@@ -106,8 +106,7 @@ def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
         for slot in range(matrix.width):
-            col = slot + 1
-            col = matrix.width / 2 + (int(col / 2) if col % 2 else col / -2)
+            col = matrix.width / 2 + (int(slot / 2) if slot % 2 else slot / -2)
             if slots[slot][0] is not None:
                 try:
                     height = math.ceil(math.log(slots[slot][1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
@@ -132,7 +131,7 @@ def print_matrix(matrix, slots):
                 if slots[slot][0].service >= slots[slot][1]:
                     slots[slot][1] += 10
                 else:
-                    for row in range(1, matrix.height + 1):
+                    for row in range(matrix.height):
                         matrix.SetPixel(col, row, 0, 0, 0)
                     slots[slot] = [None, 0]
 
