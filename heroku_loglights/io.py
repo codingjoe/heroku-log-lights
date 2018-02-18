@@ -1,8 +1,8 @@
 import asyncio
 import json
+import math
 
 import aiohttp
-import math
 
 from heroku_loglights import Log, HEROKU_ROUTER_TIMEOUT
 
@@ -27,41 +27,39 @@ class COLORS:
     BLINK = '\033[4m'
 
 
-@asyncio.coroutine
-def get_stream_url(app_name, token):
+async def get_stream_url(app_name, token):
     url = 'https://api.heroku.com/apps/%s/log-sessions' % app_name
-    with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/vnd.heroku+json; version=3',
             'Authorization': 'Bearer %s' % token
         }
-        response = yield from session.post(url, data=json.dumps(log_config), headers=headers)
+        response = await session.post(url, data=json.dumps(log_config), headers=headers)
         if response.status == 201:
-            data = yield from response.json()
+            data = await response.json()
             return data['logplex_url']
         else:
             raise IOError
 
 
-@asyncio.coroutine
-def read_stream(app_name, auth_token):
+async def read_stream(app_name, auth_token):
     while True:
-        stream_url = yield from get_stream_url(app_name, auth_token)
+        stream_url = await get_stream_url(app_name, auth_token)
         print('Reading stream: %s' % stream_url)
         log = b''
         with aiohttp.ClientSession() as session:
-            response = yield from session.get(stream_url)
+            response = await session.get(stream_url)
             while True:
                 try:
-                    chunk = yield from response.content.read(1)
+                    chunk = await response.content.read(1)
                 except aiohttp.ServerDisconnectedError:
                     break
                 if not chunk:
                     break
                 if chunk == b'\n':
                     try:
-                        yield from write_to_queue(log)
+                        await write_to_queue(log)
                     except ValueError as e:
                         print(str(e))
                     log = b''
@@ -69,15 +67,13 @@ def read_stream(app_name, auth_token):
                     log += chunk
 
 
-@asyncio.coroutine
-def write_to_queue(log: bytes):
-    yield from queue.put(Log(log.decode('utf-8')))
+async def write_to_queue(log: bytes):
+    await queue.put(Log(log.decode('utf-8')))
 
 
-@asyncio.coroutine
-def print_log():
+async def print_log():
     while True:
-        log = yield from queue.get()
+        log = await queue.get()
         if log.service < 30:
             color = COLORS.GREEN
         elif log.service < 100:
@@ -90,10 +86,9 @@ def print_log():
         print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
 
 
-@asyncio.coroutine
-def consume_logs(slots):
+async def consume_logs(slots):
     while True:
-        log = yield from queue.get()
+        log = await queue.get()
         try:
             i = slots.index([None, 0])
             slots[i] = [log, 0]
@@ -101,8 +96,7 @@ def consume_logs(slots):
             print("No more slots. Log dropped: %s" % log)
 
 
-@asyncio.coroutine
-def print_matrix(matrix, slots):
+async def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
         for slot in range(matrix.width):
@@ -136,4 +130,4 @@ def print_matrix(matrix, slots):
                         matrix.SetPixel(col, row, 0, 0, 0)
                     slots[slot] = [None, 0]
 
-        (yield from asyncio.sleep(0.01))
+        await asyncio.sleep(0.01)
