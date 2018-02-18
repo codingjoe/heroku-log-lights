@@ -33,7 +33,7 @@ Run and hide! You have about 10min until your boss comes storming the office and
 
 ### Parts
 
-![LEDs everywhere](https://img.memesuper.com/0e7aae6b9766c895a845cae2fbb0aff9_3466791-led-memes_400-304.jpeg)
+![LEDs everywhere](https://asset.msi.com/global/picture/article/article_147486003557e89403d6afe0.jpg)
 
 * [RGB LED Matrix](http://a.co/89lfm33)
 * [Raspberry Pi](https://www.raspberrypi.org)
