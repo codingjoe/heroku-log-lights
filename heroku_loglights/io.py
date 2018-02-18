@@ -48,7 +48,7 @@ async def read_stream(app_name, auth_token):
         stream_url = await get_stream_url(app_name, auth_token)
         print('Reading stream: %s' % stream_url)
         log = b''
-        with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
             response = await session.get(stream_url)
             while True:
                 try:
