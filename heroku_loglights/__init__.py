@@ -37,7 +37,7 @@ HEROKU_ROUTER_TIMEOUT = 30000
 
 
 class Log:
-    PATTERN = (
+    PATTERN = re.compile(
         r'(?P<year>\d{4})'
         r'-(?P<month>[01]\d)'
         r'-(?P<day>[0-3]\d)'
@@ -59,7 +59,7 @@ class Log:
         r' bytes=(?P<bytes>[^ ]+)'
     )
 
-    ERROR_PATTERN = (
+    ERROR_PATTERN = re.compile(
         r'(?P<year>\d{4})'
         r'-(?P<month>[01]\d)'
         r'-(?P<day>[0-3]\d)'
@@ -84,7 +84,7 @@ class Log:
     )
 
     def __init__(self, log_str: str):
-        result = re.match(self.PATTERN, log_str) or re.match(self.ERROR_PATTERN, log_str)
+        result = self.PATTERN.match(log_str) or self.ERROR_PATTERN.match(log_str)
         if result is None:
             raise ValueError("Given sting isn't a valid log: %s" % log_str)
         args = result.groupdict()
