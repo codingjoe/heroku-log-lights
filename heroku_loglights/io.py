@@ -47,28 +47,22 @@ async def read_stream(app_name, auth_token):
     while True:
         stream_url = await get_stream_url(app_name, auth_token)
         print('Reading stream: %s' % stream_url)
-        log = b''
         async with aiohttp.ClientSession() as session:
             response = await session.get(stream_url)
-            while True:
-                try:
-                    chunk = await response.content.read(1)
-                except aiohttp.ServerDisconnectedError:
-                    break
-                if not chunk:
-                    break
-                if chunk == b'\n':
-                    try:
-                        await write_to_queue(log)
-                    except ValueError as e:
-                        print(str(e))
-                    log = b''
-                else:
-                    log += chunk
+            try:
+                async for line in response.content:
+                    await write_to_queue(line)
+            except aiohttp.ServerDisconnectedError:
+                pass
 
 
 async def write_to_queue(log: bytes):
-    await queue.put(Log(log.decode('utf-8')))
+    try:
+        log = Log(log.decode('utf-8'))
+    except ValueError as e:
+        print(str(e))
+    else:
+        await queue.put(log)
 
 
 async def print_log():
