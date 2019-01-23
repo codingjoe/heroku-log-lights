@@ -93,23 +93,23 @@ async def consume_logs(slots):
 async def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
-        for slot in range(matrix.width):
+        for slot in slots:
             col = slot + 1
             col = matrix.width / 2 + (int(col / 2) if col % 2 else col / -2)
-            if slots[slot][0] is not None:
+            if slot[0] is not None:
                 try:
-                    height = math.ceil(math.log(slots[slot][1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
+                    height = math.ceil(math.log(slot[1], HEROKU_ROUTER_TIMEOUT) * matrix.height)
                 except ValueError:
                     pass
                 else:
                     for y in range(height):
-                        if 300 > slots[slot][0].status >= 200:
+                        if 300 > slot[0].status >= 200:
                             color = int(0 + cs * y), int(255 - cs * y), 0
-                        elif 400 > slots[slot][0].status >= 300:
+                        elif 400 > slot[0].status >= 300:
                             color = int(0 + cs * y), 0, int(255 - cs * y)
-                        elif 500 > slots[slot][0].status >= 400:
+                        elif 500 > slot[0].status >= 400:
                             color = 255, 255, 0
-                        elif slots[slot][0].status >= 500:
+                        elif slot[0].status >= 500:
                             color = 255, 0, 0
                         else:
                             color = 0, 0, 0
@@ -117,11 +117,12 @@ async def print_matrix(matrix, slots):
                             matrix.SetPixel(col, matrix.height - y, *color)
                         except Exception:
                             pass
-                if slots[slot][0].service >= slots[slot][1]:
-                    slots[slot][1] += 10
+                if slot[0].service >= slot[1]:
+                    slot[1] += 10
                 else:
                     for row in range(matrix.height):
                         matrix.SetPixel(col, row, 0, 0, 0)
-                    slots[slot] = [None, 0]
+                    slot[0] = None
+                    slot[1] = 0
 
         await asyncio.sleep(0.01)
