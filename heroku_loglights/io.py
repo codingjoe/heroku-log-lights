@@ -6,8 +6,6 @@ import aiohttp
 
 from heroku_loglights import Log, HEROKU_ROUTER_TIMEOUT
 
-queue = asyncio.Queue(30)
-
 log_config = {
     "dyno": "router",
     "source": "heroku",
@@ -43,51 +41,49 @@ async def get_stream_url(app_name, token):
             raise IOError
 
 
-async def read_stream(app_name, auth_token):
+async def read_stream(slots, app_name, auth_token):
     while True:
-        stream_url = await get_stream_url(app_name, auth_token)
-        print('Reading stream: %s' % stream_url)
+        try:
+            stream_url = await get_stream_url(app_name, auth_token)
+        except IOError:
+            continue
+        else:
+            print('Reading stream: %s' % stream_url)
         async with aiohttp.ClientSession() as session:
             response = await session.get(stream_url)
             try:
                 async for line in response.content:
-                    await write_to_queue(line)
+                    try:
+                        log = Log(line.decode())
+                    except ValueError:
+                        pass
+                    else:
+                        await print_log(log)
+                        await write_slots(slots, log)
+
             except aiohttp.ServerDisconnectedError:
                 pass
 
 
-async def write_to_queue(log: bytes):
-    try:
-        log = Log(log.decode('utf-8'))
-    except ValueError as e:
-        print(str(e))
+async def print_log(log):
+    if log.service < 30:
+        color = COLORS.GREEN
+    elif log.service < 100:
+        color = COLORS.BLUE
+    elif log.service < 1000:
+        color = COLORS.YELLOW
     else:
-        await queue.put(log)
+        color = COLORS.RED
+    seconds = math.ceil(math.log(log.service, 1.4101)) % 30
+    print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
 
 
-async def print_log():
-    while True:
-        log = await queue.get()
-        if log.service < 30:
-            color = COLORS.GREEN
-        elif log.service < 100:
-            color = COLORS.BLUE
-        elif log.service < 1000:
-            color = COLORS.YELLOW
-        else:
-            color = COLORS.RED
-        seconds = math.ceil(math.log(log.service, 1.4101)) % 30
-        print(color + "{:>30}".format('')[:seconds] + COLORS.DEFAULT + "{:>30}".format('')[seconds:] + str(log))
-
-
-async def consume_logs(slots):
-    while True:
-        log = await queue.get()
-        try:
-            i = slots.index([None, 0])
-            slots[i] = [log, 0]
-        except ValueError:
-            print("No more slots. Log dropped: %s" % log)
+async def write_slots(slots, log):
+    try:
+        i = slots.index([None, 0])
+        slots[i] = [log, 0]
+    except ValueError:
+        print("No more slots. Log dropped: %s" % log)
 
 
 async def print_matrix(matrix, slots):

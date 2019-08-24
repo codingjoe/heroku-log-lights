@@ -1,18 +1,15 @@
 """Heroku Log Lights is a visualisation of Heroku router logs for an LED matrix."""
 import argparse
 import asyncio
-import functools
 import logging
 import os
-import signal
-import sys
 
 try:
     from rgbmatrix import RGBMatrix
 except ImportError:
     RGBMatrix = None
 
-from heroku_loglights.io import read_stream, print_log, consume_logs, print_matrix
+from heroku_loglights.io import read_stream, print_matrix
 
 logger = logging.getLogger('heroku_loglights')
 
@@ -44,32 +41,22 @@ def main():
     if auth_token in [None, '']:
         auth_token = os.environ.get('HEROKU_AUTH_TOKEN')
     if auth_token in [None, '']:
-        raise RuntimeError('Please specify "HEROKU_AUTH_TOKEN" in your enivorment or add the token using "--token".')
+        raise RuntimeError(
+            'Please specify "HEROKU_AUTH_TOKEN" in your'
+            ' enivorment or add the token using "--token".'
+        )
 
-    def ask_exit(signame):
-        print("Got signal %s: exit" % signame)
-        print("Cleaning up...")
-        loop.stop()
-        print("Done!")
+    slots = [[None, 0]] * 64
+    if RGBMatrix:
+        matrix = RGBMatrix(32, 2, 1)
+        asyncio.Task(print_matrix(matrix, slots))
 
     loop = asyncio.get_event_loop()
-    asyncio.Task(read_stream(app_name, auth_token))
-    if RGBMatrix is None:
-        asyncio.Task(print_log())
-    else:
-        matrix = RGBMatrix(32, 2, 1)
-        slots = ([None, 0]) * matrix.width
-        asyncio.Task(print_matrix(matrix, slots))
-        asyncio.Task(consume_logs(slots))
-
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame),
-                                functools.partial(ask_exit, signame))
     try:
-        loop.run_forever()
+        loop.run_until_complete(read_stream(slots, app_name, auth_token))
     finally:
         loop.close()
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()
