@@ -89,8 +89,7 @@ async def write_slots(slots, log):
 async def print_matrix(matrix, slots):
     cs = 255 / matrix.height
     while True:
-        for slot in slots:
-            col = slot + 1
+        for col, slot in enumerate(slots, start=1):
             col = matrix.width / 2 + (int(col / 2) if col % 2 else col / -2)
             if slot[0] is not None:
                 try:
