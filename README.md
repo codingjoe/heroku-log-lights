@@ -66,6 +66,7 @@ sudo apt-get install git python3-dev python3-pillow python3-pip -y
 ```shell
 cd /tmp
 git clone --recursive https://github.com/codingjoe/heroku-log-lights.git
+cd heroku-log-lights
 make
 sudo make install
 ```
