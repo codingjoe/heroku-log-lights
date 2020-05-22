@@ -1,5 +1,4 @@
-PYTHON     ?= $(shell command -v python3)
-PIP	       ?= $(shell command -v pip3)
+PYTHON = python3
 LED_MATRIX_LIB_DIR = rpi-rgb-led-matrix
 HARDWARE_DESC = adafruit-hat
 
@@ -8,7 +7,7 @@ all:
 
 install:
 	PYTHON=$(PYTHON) HARDWARE_DESC=$(HARDWARE_DESC) $(MAKE) -C $(LED_MATRIX_LIB_DIR) install-python
-	$(PIP) install -e .
+	$(PYTHON) setup.py install
 
 clean:
 	PYTHON=$(PYTHON) HARDWARE_DESC=$(HARDWARE_DESC) $(MAKE) -C $(LED_MATRIX_LIB_DIR) clean
